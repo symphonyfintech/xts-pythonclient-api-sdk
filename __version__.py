@@ -1,0 +1,8 @@
+__title__ = "XTS Connect"
+__description__ = "The official Python client for the XTS Connect Interactive Trading and Market Data API"
+__url__ = "https://www.symphonyfintech.com"
+__download_url__ = ""
+__version__ = "1.0.0"
+__author__ = "Symphony Fintech Pvt ltd."
+__author_email__ = ""
+__license__ = ""
