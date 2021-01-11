@@ -1,12 +1,9 @@
-import json
-import socketio
-import threading
-import time
 import configparser
 import os
-import zmq
-import time
 from datetime import datetime
+
+import socketio
+
 
 class MDSocket_io(socketio.Client):
     """A Socket.IO client.
@@ -43,7 +40,8 @@ class MDSocket_io(socketio.Client):
     """
 
     def __init__(self, token, userID, reconnection=True, reconnection_attempts=0, reconnection_delay=1,
-                 reconnection_delay_max=50000, randomization_factor=0.5, logger=False, binary=False, json=None, **kwargs):
+                 reconnection_delay_max=50000, randomization_factor=0.5, logger=False, binary=False, json=None,
+                 **kwargs):
         self.sid = socketio.Client(logger=True, engineio_logger=True)
         self.eventlistener = self.sid
 
@@ -66,6 +64,8 @@ class MDSocket_io(socketio.Client):
         self.sid.on('1501-json-full', self.on_message1501_json_full)
         self.sid.on('1501-json-partial', self.on_message1501_json_partial)
 
+        self.sid.on('1105-json-partial', self.on_message1105_json_partial)
+
         self.sid.on('disconnect', self.on_disconnect)
 
         """Get the root url from config file"""
@@ -78,7 +78,7 @@ class MDSocket_io(socketio.Client):
         self.userID = userID
         publishFormat = 'JSON'
         self.broadcastMode = configParser.get('root_url', 'broadcastMode')
-        token = token
+        self.token = token
 
         port = f'{self.port}/?token='
 
@@ -117,12 +117,11 @@ class MDSocket_io(socketio.Client):
         self.sid.connect(url, headers, transports, namespaces, socketio_path)
         self.sid.wait()
         """Disconnected from the socket."""
-        #self.sid.disconnect()
+        # self.sid.disconnect()
 
     def on_connect(self):
         """Connect from the socket."""
         print('Market Data Socket connected successfully!')
-
 
     def on_message(self, data):
         """On receiving message"""
@@ -131,10 +130,9 @@ class MDSocket_io(socketio.Client):
     def on_message1502_json_full(self, data):
         """On receiving message code 1502 full"""
         print('I received a 1502 Market depth message!' + data)
-        message = "1502 >> #{id} >> {data}".format(id=2885, data=data)
-        sock.send(message)
 
     def on_message1504_json_full(self, data):
+        """On receiving message code 1504 full"""
         """On receiving message code 1504 full"""
         print('I received a 1504 Index data message!' + data)
 
@@ -148,9 +146,7 @@ class MDSocket_io(socketio.Client):
 
     def on_message1501_json_full(self, data):
         """On receiving message code 1501 full"""
-        print('I received a 1510 Level1,Touchline message!' + data)
-        message = "1501 >> #{id} >> {data}".format(id=2885, data=data)
-        sock.send(message)
+        print('I received a 1501 Level1,Touchline message!' + data)
 
     def on_message1502_json_partial(self, data):
         """On receiving message code 1502 partial"""
@@ -171,19 +167,24 @@ class MDSocket_io(socketio.Client):
     def on_message1501_json_partial(self, data):
         """On receiving message code 1501 partial"""
         now = datetime.now()
-        today=now.strftime("%H:%M:%S")
-        print(today,'in main 1501 partial Level1,Touchline message!' + data+' \n')
-                       
-        print('I received a 1510 Level1,Touchline message!' + data)
+        today = now.strftime("%H:%M:%S")
+        print(today, 'in main 1501 partial Level1,Touchline message!' + data + ' \n')
+
+    def on_message1105_json_partial(self, data):
+        """On receiving message code 1105 partial"""
+        now = datetime.now()
+        today = now.strftime("%H:%M:%S")
+        print(today, 'in main 1105 partial, Instrument Property Change Event!' + data + ' \n')
+
+        print('I received a 1105 Instrument Property Change Event!' + data)
 
     def on_disconnect(self):
         """Disconnected from the socket"""
         print('Market Data Socket disconnected!')
-        
-    
-    def on_error(self,data):
+
+    def on_error(self, data):
         """Error from the socket"""
-        print('Market Data Error',data)                              
+        print('Market Data Error', data)
 
     def get_emitter(self):
         """For getting the event listener"""

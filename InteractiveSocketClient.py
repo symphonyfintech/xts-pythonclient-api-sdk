@@ -1,9 +1,7 @@
-import json
-import socketio
-import threading
-import time
 import configparser
 import os
+
+import socketio
 
 
 class OrderSocket_io(socketio.Client):
@@ -41,7 +39,8 @@ class OrderSocket_io(socketio.Client):
     """
 
     def __init__(self, token, userID, reconnection=True, reconnection_attempts=0, reconnection_delay=1,
-                 reconnection_delay_max=5, randomization_factor=0.5, logger=False, binary=False, json=None, **kwargs):
+                 reconnection_delay_max=50000, randomization_factor=0.5, logger=False, binary=False, json=None,
+                 **kwargs):
         self.sid = socketio.Client(logger=True, engineio_logger=True)
         self.eventlistener = self.sid
         self.sid.on('connect', self.on_connect)
@@ -51,6 +50,7 @@ class OrderSocket_io(socketio.Client):
         self.sid.on('order', self.on_order)
         self.sid.on('trade', self.on_trade)
         self.sid.on('position', self.on_position)
+        self.sid.on('tradeConversion', self.on_tradeconversion)
         self.sid.on('logout', self.on_messagelogout)
         self.sid.on('disconnect', self.on_disconnect)
 
@@ -66,7 +66,7 @@ class OrderSocket_io(socketio.Client):
 
         port = f'{self.port}/?token='
 
-        self.connection_url = port + self.token + '&userID=' + self.userID
+        self.connection_url = port + self.token + '&userID=' + self.userID + "&apiType=INTERACTIVE"
 
     def connect(self, headers={}, transports='websocket', namespaces=None, socketio_path='/interactive/socket.io',
                 verify=False):
@@ -90,7 +90,8 @@ class OrderSocket_io(socketio.Client):
         """
         """Connect to the socket."""
         url = self.connection_url
-        print("URL: " + url)
+
+        """Connected to the socket."""
         self.sid.connect(url, headers, transports, namespaces, socketio_path)
         self.sid.wait()
         """Disconnect from the socket."""
@@ -123,6 +124,10 @@ class OrderSocket_io(socketio.Client):
     def on_position(self, data):
         """On receiving position data from socket"""
         print("Position Retrieved!" + data)
+
+    def on_tradeconversion(self, data):
+        """On receiving trade conversion data from socket"""
+        print("Trade Conversion Received!" + data)
 
     def on_messagelogout(self, data):
         """On receiving user logout message"""
