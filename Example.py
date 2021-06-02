@@ -1,4 +1,5 @@
-from XTConnect import XTSConnect
+# from XTConnect import XTSConnect
+from Connect import XTSConnect
 
 # logging.basicConfig(level=logging.DEBUG)
 
@@ -9,13 +10,27 @@ from XTConnect import XTSConnect
 # Interactive API Credentials
 # API_KEY = "YOUR_API_KEY_HERE"
 # API_SECRET = "YOUR_API_SECRET_HERE"
+# clientID = "YOUR_CLIENT_ID_HERE"
+# userID = "YOUR_USER_ID_HERE"
 # XTS_API_BASE_URL = "https://xts-api.trading"
 # source = "WEBAPI"
 
-API_KEY = "15fc93db915525ec829191"
-API_SECRET = "Jwfr052#RY"
+"Note : For dealer credentials add the clientID and for investor client leave the clientID blank"
+
+"""Dealer credentials"""
+API_KEY = "614569687dde8e1d6b5953"
+API_SECRET = "Glds375@uv"
+clientID = "DV01"
+userID = "DVIHAN"
 XTS_API_BASE_URL = "https://developers.symphonyfintech.in"
 source = "WEBAPI"
+
+"""Investor client credentials"""
+# API_KEY = "431c75e076e238bdff8176"
+# API_SECRET = "Ieil074#FH"
+# clientID = "RUCHA"
+# XTS_API_BASE_URL = "https://developers.symphonyfintech.in"
+# source = "WEBAPI"
 
 """Make XTSConnect object by passing your interactive API appKey, secretKey and source"""
 xt = XTSConnect(API_KEY, API_SECRET, source)
@@ -23,9 +38,9 @@ xt = XTSConnect(API_KEY, API_SECRET, source)
 """Using the xt object we created call the interactive login Request"""
 response = xt.interactive_login()
 print("Login: ", response)
-
+clientID = "DV01"
 """Order book Request"""
-response = xt.get_order_book()
+response = xt.get_order_book(clientID)
 print("Order Book: ", response)
 
 """Place Order Request"""
@@ -40,7 +55,8 @@ response = xt.place_order(
     orderQuantity=10,
     limitPrice=0,
     stopPrice=0,
-    orderUniqueIdentifier="454845")
+    orderUniqueIdentifier="454845",
+    clientID=clientID)
 print("Place Order: ", response)
 
 
@@ -58,42 +74,44 @@ if response['type'] != 'error':
         modifiedLimitPrice=1405,
         modifiedStopPrice=0,
         modifiedTimeInForce=xt.VALIDITY_DAY,
-        orderUniqueIdentifier="454845"
+        orderUniqueIdentifier="454845",
+        clientID=clientID
     )
     print("Modify Order: ", response)
 
     """Cancel Orders Request"""
     response = xt.cancel_order(
         appOrderID=OrderID,
-        orderUniqueIdentifier='454845')
+        orderUniqueIdentifier='454845',
+        clientID=clientID)
     print("Cancel Order: ", response)
 
     """Get Order History Request"""
-    response = xt.get_order_history(appOrderID=OrderID)
+    response = xt.get_order_history(appOrderID=OrderID,clientID=clientID)
     print("Order History: ", response)
 
 """Get Profile Request"""
-response = xt.get_profile()
+response = xt.get_profile(clientID=userID)
 print("Profile: ", response)
 
 """Get Balance Request"""
-response = xt.get_balance()
+response = xt.get_balance(clientID=clientID)
 print("Balance: ", response)
 
 """Get Trade Book Request"""
-response = xt.get_trade()
+response = xt.get_trade(clientID=clientID)
 print("Trade Book: ", response)
 
 """Get Holdings Request"""
-response = xt.get_holding()
+response = xt.get_holding(clientID=clientID)
 print("Holdings: ", response)
 
 """Get Position by DAY Request"""
-response = xt.get_position_daywise()
+response = xt.get_position_daywise(clientID=clientID)
 print("Position by Day: ", response)
 
 """Get Position by NET Request"""
-response = xt.get_position_netwise()
+response = xt.get_position_netwise(clientID=clientID)
 print("Position by Net: ", response)
 
 """Position Convert Request"""
@@ -103,7 +121,8 @@ response = xt.convert_position(
     targetQty=10,
     isDayWise=True,
     oldProductType=xt.PRODUCT_MIS,
-    newProductType=xt.PRODUCT_NRML)
+    newProductType=xt.PRODUCT_NRML,
+    clientID=clientID)
 print("Position Convert: ", response)
 
 """Place Cover Order Request"""
@@ -116,7 +135,8 @@ response = xt.place_cover_order(
     disclosedQuantity=0,
     limitPrice=1802,
     stopPrice=1899,
-    orderUniqueIdentifier="454845")
+    orderUniqueIdentifier="454845",
+    clientID=clientID)
 print("Cover Order:", response)
 
 # extracting the order id from response
@@ -124,7 +144,7 @@ if response['type'] != 'error':
     OrderID = response['result']['ExitAppOrderID']
 
     """Exit Cover Order Request"""
-    response = xt.exit_cover_order(appOrderID=OrderID)
+    response = xt.exit_cover_order(appOrderID=OrderID, clientID=clientID)
     print("Exit Cover Order:", response)
 
 """Position Squareoff Request"""
@@ -136,25 +156,35 @@ response = xt.squareoff_position(
     positionSquareOffQuantityType=xt.SQUAREOFFQUANTITY_EXACTQUANTITY,
     squareOffQtyValue=5,
     blockOrderSending=True,
-    cancelOrders=True)
+    cancelOrders=True,
+    clientID=clientID)
 print("Position Squareoff: ", response)
 
 """Interactive logout Request"""
-response = xt.interactive_logout()
+response = xt.interactive_logout(clientID=clientID)
 print("Interactive Logout: ", response)
+
+exit()
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Marketdata
 # ----------------------------------------------------------------------------------------------------------------------
 
 # Marketdata API Credentials
-# API_KEY = "YOUR_API_KEY_HERE"
-# API_SECRET = "YOUR_API_SECRET_HERE"
-# XTS_API_BASE_URL = "https://xts-api.trading"
-# source = "WEBAPI"
+API_KEY = "YOUR_API_KEY_HERE"
+API_SECRET = "YOUR_API_SECRET_HERE"
+XTS_API_BASE_URL = "https://xts-api.trading"
+source = "WEBAPI"
 
-API_KEY = "c2368d9aabcafe7a3e8529"
-API_SECRET = "Xogi551#V5"
+"""Dealer login credentials"""
+API_KEY = "22f6f9dad2fe3982419756"
+API_SECRET = "Bxtj027$Dr"
+XTS_API_BASE_URL = "https://developers.symphonyfintech.in"
+source = "WEBAPI"
+
+"""Investor client login credentials"""
+API_KEY = "76179cbae91810ddda7774"
+API_SECRET = "Bylg203#fv"
 XTS_API_BASE_URL = "https://developers.symphonyfintech.in"
 source = "WEBAPI"
 
