@@ -60,7 +60,7 @@ class OrderSocket_io(socketio.Client):
         """Get root url from config file"""
         currDirMain = os.getcwd()
         configParser = configparser.RawConfigParser()
-        configFilePath = os.path.join(currDirMain, '..\XTConnect\config.ini')
+        configFilePath = os.path.join(currDirMain, 'config.ini')
         configParser.read(configFilePath)
         self.port = configParser.get('root_url', 'root').strip()
 
