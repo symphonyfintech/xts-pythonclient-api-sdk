@@ -6,13 +6,14 @@
     :copyright:
     :license: see LICENSE for details.
 """
-from six.moves.urllib.parse import urljoin
+import configparser
 import json
 import logging
+
 import requests
+from six.moves.urllib.parse import urljoin
+
 import Exception as ex
-from requests.adapters import HTTPAdapter
-import configparser
 
 log = logging.getLogger(__name__)
 
@@ -36,7 +37,7 @@ class XTSConnect(XTSCommon):
     """
     """Get the configurations from config.ini"""
     cfg = configparser.ConfigParser()
-    cfg.read('..\XTConnect\config.ini')
+    cfg.read('config.ini')
 
     # Default root API endpoint. It's possible to
     # override this by passing the `root` parameter during initialisation.
@@ -176,9 +177,9 @@ class XTSConnect(XTSCommon):
         # disable requests SSL warning
         requests.packages.urllib3.disable_warnings()
 
-    def _set_common_variables(self, access_token, userID, isInvestorClient=None):
+    def _set_common_variables(self, access_token, isInvestorClient):
         """Set the `access_token` received after a successful authentication."""
-        super().__init__(access_token, userID, isInvestorClient)
+        super().__init__(access_token, isInvestorClient)
 
     def _login_url(self):
         """Get the remote login url to which a user should be redirected to initiate the login flow."""
@@ -192,22 +193,21 @@ class XTSConnect(XTSCommon):
                 "secretKey": self.secretKey,
                 "source": self.source
             }
-
             response = self._post("user.login", params)
 
             if "token" in response['result']:
-                self._set_common_variables(response['result']['token'], response['result']['userID'],
+                self._set_common_variables(response['result']['token'],
                                            response['result']['isInvestorClient'])
             return response
         except Exception as e:
             return response['description']
 
-    def get_order_book(self):
+    def get_order_book(self, clientID=None):
         """Request Order book gives states of all the orders placed by an user"""
         try:
             params = {}
             if not self.isInvestorClient:
-                params['clientID'] = self.userID
+                params['clientID'] = clientID
             response = self._get("order.status", params)
             return response
         except Exception as e:
@@ -224,7 +224,8 @@ class XTSConnect(XTSCommon):
                     orderQuantity,
                     limitPrice,
                     stopPrice,
-                    orderUniqueIdentifier
+                    orderUniqueIdentifier,
+                    clientID=None
                     ):
         """To place an order"""
         try:
@@ -244,34 +245,34 @@ class XTSConnect(XTSCommon):
             }
 
             if not self.isInvestorClient:
-                params['clientID'] = self.userID
+                params['clientID'] = clientID
 
             response = self._post('order.place', json.dumps(params))
             return response
         except Exception as e:
             return response['description']
 
-    def get_profile(self):
+    def get_profile(self, clientID=None):
         """Using session token user can access his profile stored with the broker, it's possible to retrieve it any
         point of time with the http: //ip:port/interactive/user/profile API. """
         try:
             params = {}
             if not self.isInvestorClient:
-                params['clientID'] = self.userID
+                params['clientID'] = clientID
 
             response = self._get('user.profile', params)
             return response
         except Exception as e:
             return response['description']
 
-    def get_balance(self):
+    def get_balance(self, clientID=None):
         """Get Balance API call grouped under this category information related to limits on equities, derivative,
         upfront margin, available exposure and other RMS related balances available to the user."""
         if self.isInvestorClient:
             try:
                 params = {}
                 if not self.isInvestorClient:
-                    params['clientID'] = self.userID
+                    params['clientID'] = clientID
                 response = self._get('user.balance', params)
                 return response
             except Exception as e:
@@ -289,7 +290,8 @@ class XTSConnect(XTSCommon):
                      modifiedLimitPrice,
                      modifiedStopPrice,
                      modifiedTimeInForce,
-                     orderUniqueIdentifier
+                     orderUniqueIdentifier,
+                     clientID=None
                      ):
         """The facility to modify your open orders by allowing you to change limit order to market or vice versa,
         change Price or Quantity of the limit open order, change disclosed quantity or stop-loss of any
@@ -309,63 +311,63 @@ class XTSConnect(XTSCommon):
             }
 
             if not self.isInvestorClient:
-                params['clientID'] = self.userID
+                params['clientID'] = clientID
 
             response = self._put('order.modify', json.dumps(params))
             return response
         except Exception as e:
             return response['description']
 
-    def get_trade(self):
+    def get_trade(self, clientID=None):
         """Trade book returns a list of all trades executed on a particular day , that were placed by the user . The
         trade book will display all filled and partially filled orders. """
         try:
             params = {}
             if not self.isInvestorClient:
-                params['clientID'] = self.userID
+                params['clientID'] = clientID
             response = self._get('trades', params)
             return response
         except Exception as e:
             return response['description']
 
-    def get_holding(self):
+    def get_holding(self, clientID=None):
         """Holdings API call enable users to check their long term holdings with the broker."""
         try:
             params = {}
             if not self.isInvestorClient:
-                params['clientID'] = self.userID
+                params['clientID'] = clientID
 
             response = self._get('portfolio.holdings', params)
             return response
         except Exception as e:
             return response['description']
 
-    def get_position_daywise(self):
+    def get_position_daywise(self, clientID=None):
         """The positions API returns positions by day, which is a snapshot of the buying and selling activity for
         that particular day."""
         try:
             params = {'dayOrNet': 'DayWise'}
             if not self.isInvestorClient:
-                params['clientID'] = self.userID
+                params['clientID'] = clientID
 
             response = self._get('portfolio.positions', params)
             return response
         except Exception as e:
             return response['description']
 
-    def get_position_netwise(self):
+    def get_position_netwise(self, clientID=None):
         """The positions API positions by net. Net is the actual, current net position portfolio."""
         try:
             params = {'dayOrNet': 'NetWise'}
             if not self.isInvestorClient:
-                params['clientID'] = self.userID
+                params['clientID'] = clientID
             response = self._get('portfolio.positions', params)
             return response
         except Exception as e:
             return response['description']
 
     def convert_position(self, exchangeSegment, exchangeInstrumentID, targetQty, isDayWise, oldProductType,
-                         newProductType):
+                         newProductType, clientID=None):
         """Convert position API, enable users to convert their open positions from NRML intra-day to Short term MIS or
         vice versa, provided that there is sufficient margin or funds in the account to effect such conversion """
         try:
@@ -378,26 +380,26 @@ class XTSConnect(XTSCommon):
                 'newProductType': newProductType
             }
             if not self.isInvestorClient:
-                params['clientID'] = self.userID
+                params['clientID'] = clientID
             response = self._put('portfolio.positions.convert', json.dumps(params))
             return response
         except Exception as e:
             return response['description']
 
-    def cancel_order(self, appOrderID, orderUniqueIdentifier):
+    def cancel_order(self, appOrderID, orderUniqueIdentifier, clientID=None):
         """This API can be called to cancel any open order of the user by providing correct appOrderID matching with
         the chosen open order to cancel. """
         try:
             params = {'appOrderID': int(appOrderID), 'orderUniqueIdentifier': orderUniqueIdentifier}
             if not self.isInvestorClient:
-                params['clientID'] = self.userID
+                params['clientID'] = clientID
             response = self._delete('order.cancel', params)
             return response
         except Exception as e:
             return response['description']
 
     def place_cover_order(self, exchangeSegment, exchangeInstrumentID, orderSide,orderType, orderQuantity, disclosedQuantity,
-                          limitPrice, stopPrice, orderUniqueIdentifier):
+                          limitPrice, stopPrice, orderUniqueIdentifier, clientID=None):
         """A Cover Order is an advance intraday order that is accompanied by a compulsory Stop Loss Order. This helps
         users to minimize their losses by safeguarding themselves from unexpected market movements. A Cover Order
         offers high leverage and is available in Equity Cash, Equity F&O, Commodity F&O and Currency F&O segments. It
@@ -408,27 +410,28 @@ class XTSConnect(XTSCommon):
                       'orderSide': orderSide, "orderType": orderType,'orderQuantity': orderQuantity, 'disclosedQuantity': disclosedQuantity,
                       'limitPrice': limitPrice, 'stopPrice': stopPrice, 'orderUniqueIdentifier': orderUniqueIdentifier}
             if not self.isInvestorClient:
-                params['clientID'] = self.userID
+                params['clientID'] = clientID
             response = self._post('order.place.cover', json.dumps(params))
             return response
         except Exception as e:
             return response['description']
 
-    def exit_cover_order(self, appOrderID):
+    def exit_cover_order(self, appOrderID, clientID=None):
         """Exit Cover API is a functionality to enable user to easily exit an open stoploss order by converting it
         into Exit order. """
         try:
 
             params = {'appOrderID': appOrderID}
             if not self.isInvestorClient:
-                params['clientID'] = self.userID
+                params['clientID'] = clientID
             response = self._put('order.exit.cover', json.dumps(params))
             return response
         except Exception as e:
             return response['description']
 
     def squareoff_position(self, exchangeSegment, exchangeInstrumentID, productType, squareoffMode,
-                           positionSquareOffQuantityType, squareOffQtyValue, blockOrderSending, cancelOrders):
+                           positionSquareOffQuantityType, squareOffQtyValue, blockOrderSending, cancelOrders,
+                           clientID=None):
         """User can request square off to close all his positions in Equities, Futures and Option. Users are advised
         to use this request with caution if one has short term holdings. """
         try:
@@ -440,32 +443,32 @@ class XTSConnect(XTSCommon):
                       'cancelOrders': cancelOrders
                       }
             if not self.isInvestorClient:
-                params['clientID'] = self.userID
+                params['clientID'] = clientID
             response = self._put('portfolio.squareoff', json.dumps(params))
             return response
         except Exception as e:
             return response['description']
 
-    def get_order_history(self, appOrderID):
+    def get_order_history(self, appOrderID, clientID=None):
         """Order history will provide particular order trail chain. This indicate the particular order & its state
         changes. i.e.Pending New to New, New to PartiallyFilled, PartiallyFilled, PartiallyFilled & PartiallyFilled
         to Filled etc """
         try:
             params = {'appOrderID': appOrderID}
             if not self.isInvestorClient:
-                params['clientID'] = self.userID
+                params['clientID'] = clientID
             response = self._get('order.history', params)
             return response
         except Exception as e:
             return response['description']
 
-    def interactive_logout(self):
+    def interactive_logout(self, clientID=None):
         """This call invalidates the session token and destroys the API session. After this, the user should go
         through login flow again and extract session token from login response before further activities. """
         try:
             params = {}
             if not self.isInvestorClient:
-                params['clientID'] = self.userID
+                params['clientID'] = clientID
             response = self._delete('user.logout', params)
             return response
         except Exception as e:
@@ -688,7 +691,7 @@ class XTSConnect(XTSCommon):
                     raise ex.XTSTokenException(data["description"])
 
                 if r.status_code == 400 and data["type"] == "error" and data["description"] == "Bad Request":
-                    message = "Description: " + data["description"] + " errors: " + data['result']["errors"]
+                    message = "Description: " + data["description"] + " errors: " + str(data['result']["errors"])
                     raise ex.XTSInputException(str(message))
 
             return data
