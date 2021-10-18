@@ -56,6 +56,8 @@ class XTSConnect(XTSCommon):
     # Order types
     ORDER_TYPE_MARKET = "MARKET"
     ORDER_TYPE_LIMIT = "LIMIT"
+    ORDER_TYPE_STOPMARKET = "STOPMARKET"
+    ORDER_TYPE_STOPLIMIT = "STOPLIMIT"
 
     # Transaction type
     TRANSACTION_TYPE_BUY = "BUY"
@@ -96,6 +98,7 @@ class XTSConnect(XTSCommon):
         "order.exit.cover": "/interactive/orders/cover",
         "order.modify": "/interactive/orders",
         "order.cancel": "/interactive/orders",
+        "order.cancelall": "/interactive/orders/cancelall",
         "order.history": "/interactive/orders",
 
         "portfolio.positions": "/interactive/portfolio/positions",
@@ -397,6 +400,17 @@ class XTSConnect(XTSCommon):
             return response
         except Exception as e:
             return response['description']
+        
+    def cancelall_order(self, exchangeSegment, exchangeInstrumentID):
+        """This API can be called to cancel all open order of the user by providing exchange segment and exchange instrument ID """
+        try:
+            params = {"exchangeSegment": exchangeSegment, "exchangeInstrumentID": exchangeInstrumentID}
+            if not self.isInvestorClient:
+                params['clientID'] = self.userID
+            response = self._post('order.cancelall', json.dumps(params))
+            return response
+        except Exception as e:
+            return response['description']    
 
     def place_cover_order(self, exchangeSegment, exchangeInstrumentID, orderSide,orderType, orderQuantity, disclosedQuantity,
                           limitPrice, stopPrice, orderUniqueIdentifier, clientID=None):
