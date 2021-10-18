@@ -93,9 +93,7 @@ def on_message1510_json_partial(data):
 def on_message1512_json_partial(data):
     print('I received a 1512, LTP Event message!' + data)
 
-# Callback for message code 1507 PARTIAL
-def on_message1507_json_partial(data):
-    print('I received a 1507, NarketStatus message!' + data)
+
 
 # Callback for message code 1105 PARTIAL
 def on_message1105_json_partial(data):
@@ -124,7 +122,6 @@ soc.on_message1512_json_full = on_message1512_json_full
 soc.on_message1105_json_full = on_message1105_json_full
 soc.on_message1502_json_partial = on_message1502_json_partial
 soc.on_message1505_json_partial = on_message1505_json_partial
-soc.on_message1507_json_partial = on_message1507_json_partial
 soc.on_message1510_json_partial = on_message1510_json_partial
 soc.on_message1501_json_partial = on_message1501_json_partial
 soc.on_message1512_json_partial = on_message1512_json_partial
