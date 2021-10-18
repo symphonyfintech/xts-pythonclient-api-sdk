@@ -13,6 +13,9 @@ https://symphonyfintech.com/xts-trading-front-end-api-v2/
 
     Python 3.8 or above.
     Internet Access.
+    
+    Execute below command:
+    pip install -r requirements.txt
 
 ### Usage
 Check the config.ini file, need to add the root url keep source as WEBAPI and disable_ssl as true
