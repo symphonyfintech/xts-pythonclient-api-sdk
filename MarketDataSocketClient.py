@@ -59,7 +59,6 @@ class MDSocket_io(socketio.Client):
         self.sid.on('1505-json-partial', self.on_message1505_json_partial)
 
         self.sid.on('1507-json-full', self.on_message1507_json_full)
-        self.sid.on('1507-json-partial', self.on_message1507_json_partial)
 
         self.sid.on('1510-json-full', self.on_message1510_json_full)
         self.sid.on('1510-json-partial', self.on_message1510_json_partial)
@@ -158,10 +157,6 @@ class MDSocket_io(socketio.Client):
     def on_message1502_json_partial(self, data):
         """On receiving message code 1502 partial"""
         print('I received a 1502 partial message!' + data)
-
-    def on_message1507_json_partial(self, data):
-        """On receiving message code 1507 partial"""
-        print('I received a 1507 MarketStatus message!' + data)
     
     def on_message1512_json_partial(self, data):
         """On receiving message code 1512 partial"""
