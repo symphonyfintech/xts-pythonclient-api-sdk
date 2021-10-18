@@ -143,22 +143,13 @@ print("Cover Order:", response)
 if response['type'] != 'error':
     OrderID = response['result']['ExitAppOrderID']
 
-    """Exit Cover Order Request"""
-    response = xt.exit_cover_order(appOrderID=OrderID, clientID=clientID)
-    print("Exit Cover Order:", response)
+"""Exit Cover Order Request"""
+response = xt.exit_cover_order(appOrderID=OrderID, clientID=clientID)
+ print("Exit Cover Order:", response)
 
-"""Position Squareoff Request"""
-response = xt.squareoff_position(
-    exchangeSegment=xt.EXCHANGE_NSECM,
-    exchangeInstrumentID=2885,
-    productType=xt.PRODUCT_MIS,
-    squareoffMode=xt.SQUAREOFF_DAYWISE,
-    positionSquareOffQuantityType=xt.SQUAREOFFQUANTITY_EXACTQUANTITY,
-    squareOffQtyValue=5,
-    blockOrderSending=True,
-    cancelOrders=True,
-    clientID=clientID)
-print("Position Squareoff: ", response)
+"""Cancel all Orders Request"""
+response = xt.cancelall_order(exchangeInstrumentID=22,exchangeSegment=xt.EXCHANGE_NSECM)
+print("Cancel all Orders: ", response)
 
 """Interactive logout Request"""
 response = xt.interactive_logout(clientID=clientID)
