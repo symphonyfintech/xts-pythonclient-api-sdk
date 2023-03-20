@@ -94,6 +94,7 @@ class XTSConnect(XTSCommon):
         "trades": "/interactive/orders/trades",
         "order.status": "/interactive/orders",
         "order.place": "/interactive/orders",
+        "bracketorder.place": "/interactive/orders/bracket",
         "order.place.cover": "/interactive/orders/cover",
         "order.exit.cover": "/interactive/orders/cover",
         "order.modify": "/interactive/orders",
@@ -251,6 +252,43 @@ class XTSConnect(XTSCommon):
                 params['clientID'] = clientID
 
             response = self._post('order.place', json.dumps(params))
+            return response
+        except Exception as e:
+            return response['description']
+        
+    def place_bracketorder(self,
+                    exchangeSegment,
+                    exchangeInstrumentID,
+                    orderType,
+                    orderSide,
+                    disclosedQuantity,
+                    orderQuantity,
+                    limitPrice,
+                    squarOff,
+                    stopLossPrice,
+	                trailingStoploss,
+                    isProOrder,
+                    orderUniqueIdentifier,
+                     ):
+        """To place a bracketorder"""
+        try:
+
+            params = {
+                "exchangeSegment": exchangeSegment,
+                "exchangeInstrumentID": exchangeInstrumentID,
+                "orderType": orderType,
+                "orderSide": orderSide,
+                "disclosedQuantity": disclosedQuantity,
+                "orderQuantity": orderQuantity,
+                "limitPrice": limitPrice,
+                "squarOff": squarOff,
+                "stopLossPrice": stopLossPrice,
+                "trailingStoploss": trailingStoploss,
+                "isProOrder": isProOrder,
+             "orderUniqueIdentifier": orderUniqueIdentifier
+            }
+            response = self._post('bracketorder.place', json.dumps(params))
+            print(response)
             return response
         except Exception as e:
             return response['description']
