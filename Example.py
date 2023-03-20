@@ -90,6 +90,29 @@ if response['type'] != 'error':
     response = xt.get_order_history(appOrderID=OrderID,clientID=clientID)
     print("Order History: ", response)
 
+
+"""Place BracketOrder Request"""
+response = xt.place_bracketorder(
+    exchangeSegment=xt.EXCHANGE_NSECM,
+    exchangeInstrumentID=2885,
+    orderType=xt.ORDER_TYPE_MARKET,
+    orderSide=xt.TRANSACTION_TYPE_BUY,
+    disclosedQuantity=0,
+    orderQuantity=10,
+    limitPrice=59,
+    squarOff=1,
+    stopLossPrice=1,
+	trailingStoploss=1,
+    isProOrder=False,
+    orderUniqueIdentifier="454845"
+    )
+print("Bracket Order: ", response)
+# extracting the order id from response
+if response['type'] != 'error':
+    OrderID = response['result']['AppOrderID']
+    
+    
+
 """Get Profile Request"""
 response = xt.get_profile(clientID=userID)
 print("Profile: ", response)
