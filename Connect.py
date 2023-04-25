@@ -181,9 +181,9 @@ class XTSConnect(XTSCommon):
         # disable requests SSL warning
         requests.packages.urllib3.disable_warnings()
 
-    def _set_common_variables(self, access_token, isInvestorClient):
+    def _set_common_variables(self, access_token,userID, isInvestorClient):
         """Set the `access_token` received after a successful authentication."""
-        super().__init__(access_token, isInvestorClient)
+        super().__init__(access_token,userID, isInvestorClient)
 
     def _login_url(self):
         """Get the remote login url to which a user should be redirected to initiate the login flow."""
@@ -200,7 +200,7 @@ class XTSConnect(XTSCommon):
             response = self._post("user.login", params)
 
             if "token" in response['result']:
-                self._set_common_variables(response['result']['token'],
+                self._set_common_variables(response['result']['token'], response['result']['userID'],
                                            response['result']['isInvestorClient'])
             return response
         except Exception as e:
