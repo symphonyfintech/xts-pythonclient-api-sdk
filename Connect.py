@@ -540,7 +540,7 @@ class XTSConnect(XTSCommon):
             response = self._post("market.login", params)
 
             if "token" in response['result']:
-                self._set_common_variables(response['result']['token'], response['result']['userID'])
+                self._set_common_variables(response['result']['token'], response['result']['userID'],False)
             return response
         except Exception as e:
             return response['description']
