@@ -95,6 +95,8 @@ class XTSConnect(XTSCommon):
         "order.status": "/interactive/orders",
         "order.place": "/interactive/orders",
         "bracketorder.place": "/interactive/orders/bracket",
+	"bracketorder.modify": "/interactive/orders/bracket",
+        "bracketorder.cancel": "/interactive/orders/bracket",
         "order.place.cover": "/interactive/orders/cover",
         "order.exit.cover": "/interactive/orders/cover",
         "order.modify": "/interactive/orders",
@@ -383,6 +385,17 @@ class XTSConnect(XTSCommon):
         except Exception as e:
             return response['description']
 
+    def bracketorder_cancel(self, appOrderID, clientID=None):
+        """This API can be called to cancel any open order of the user by providing correct appOrderID matching with
+        the chosen open order to cancel. """
+        try:
+            params = {'appOrderID': int(appOrderID)}
+            if not self.isInvestorClient:
+                params['clientID'] = clientID
+            response = self._delete('bracketorder.cancel', params)
+            return response
+        except Exception as e:
+            return response['description']   
     def get_position_daywise(self, clientID=None):
         """The positions API returns positions by day, which is a snapshot of the buying and selling activity for
         that particular day."""
