@@ -141,6 +141,23 @@ print("Position by Day: ", response)
 response = xt.get_position_netwise(clientID=clientID)
 print("Position by Net: ", response)
 
+"""Get Dealer Position by NET Request"""
+response = xt.get_dealerposition_daywise(clientID=clientID)
+print("Dealer Position by Net: ", response)
+
+"""Get Dealer Position by DAY Request"""
+response = xt.get_dealerposition_netwise(clientID=clientID)
+print("Dealer Position by Day: ", response)
+
+
+"""Dealer Order book Request"""
+response = xt.get_dealer_orderbook(clientID)
+print("Dealer Order Book: ", response)
+
+"""Get Dealer Trade Book Request"""
+response = xt.get_dealer_tradebook(clientID=clientID)
+print("Dealer Trade Book: ", response)
+
 """Position Convert Request"""
 response = xt.convert_position(
     exchangeSegment=xt.EXCHANGE_NSECM,
