@@ -389,7 +389,7 @@ class XTSConnect(XTSCommon):
         """This API can be called to cancel any open order of the user by providing correct appOrderID matching with
         the chosen open order to cancel. """
         try:
-            params = {'appOrderID': int(appOrderID)}
+            params = {'boEntryOrderId': int(appOrderID)}
             if not self.isInvestorClient:
                 params['clientID'] = clientID
             response = self._delete('bracketorder.cancel', params)
