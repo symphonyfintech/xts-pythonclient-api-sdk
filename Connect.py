@@ -108,6 +108,12 @@ class XTSConnect(XTSCommon):
         "portfolio.holdings": "/interactive/portfolio/holdings",
         "portfolio.positions.convert": "/interactive/portfolio/positions/convert",
         "portfolio.squareoff": "/interactive/portfolio/squareoff",
+	"portfolio.dealerpositions": "interactive/portfolio/dealerpositions",
+	"order.dealer.status": "/interactive/orders/dealerorderbook",
+	"dealer.trades": "/interactive/orders/dealertradebook",
+
+
+
 
         # Market API endpoints
         "marketdata.prefix": "marketdata",
@@ -215,6 +221,17 @@ class XTSConnect(XTSCommon):
             if not self.isInvestorClient:
                 params['clientID'] = clientID
             response = self._get("order.status", params)
+            return response
+        except Exception as e:
+            return response['description']
+		
+    def get_dealer_orderbook(self, clientID=None):
+        """Request Order book gives states of all the orders placed by an user"""
+        try:
+            params = {}
+            if not self.isInvestorClient:
+                params['clientID'] = clientID
+            response = self._get("order.dealer.status", params)
             return response
         except Exception as e:
             return response['description']
@@ -373,6 +390,18 @@ class XTSConnect(XTSCommon):
         except Exception as e:
             return response['description']
 
+    def get_dealer_tradebook(self, clientID=None):
+        """Trade book returns a list of all trades executed on a particular day , that were placed by the user . The
+        trade book will display all filled and partially filled orders. """
+        try:
+            params = {}
+            if not self.isInvestorClient:
+                params['clientID'] = clientID
+            response = self._get('dealer.trades', params)
+            return response
+        except Exception as e:
+            return response['description']
+		
     def get_holding(self, clientID=None):
         """Holdings API call enable users to check their long term holdings with the broker."""
         try:
@@ -396,7 +425,35 @@ class XTSConnect(XTSCommon):
             return response
         except Exception as e:
             return response['description']   
+		
+    def get_dealerposition_netwise(self, clientID=None):
+        """The positions API positions by net. Net is the actual, current net position portfolio."""
+        try:
+            params = {'dayOrNet': 'NetWise'}
+            if not self.isInvestorClient:
+                params['clientID'] = clientID
+            response = self._get('portfolio.dealerpositions', params)
+            return response
+        except Exception as e:
+            return response['description']
+
+
+           
+    def get_dealerposition_daywise(self, clientID=None):
+        """The positions API returns positions by day, which is a snapshot of the buying and selling activity for
+        that particular day."""
+        try:
+            params = {'dayOrNet': 'DayWise'}
+            if not self.isInvestorClient:
+                params['clientID'] = clientID
+
+            response = self._get('portfolio.dealerpositions', params)
+            return response
+        except Exception as e:
+            return response['description']
+		
     def get_position_daywise(self, clientID=None):
+	    
         """The positions API returns positions by day, which is a snapshot of the buying and selling activity for
         that particular day."""
         try:
