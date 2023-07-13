@@ -111,6 +111,10 @@ print("Bracket Order: ", response)
 if response['type'] != 'error':
     OrderID = response['result']['AppOrderID']
     
+"""Cancel BracketOrder Request"""
+res = self.xt_.bracketorder_cancel(appOrderId)
+print("Bracket Cancel: ", response)
+
     
 
 """Get Profile Request"""
