@@ -87,7 +87,7 @@ class MDSocket_io(socketio.Client):
 
         self.connection_url = port + token + '&userID=' + self.userID + '&publishFormat=' + publishFormat + '&broadcastMode=' + self.broadcastMode
 
-    def connect(self, headers={}, transports='websocket', namespaces=None, socketio_path='/marketdata/socket.io',
+    def connect(self, headers={}, transports='websocket', namespaces=None, socketio_path='/apimarketdata/socket.io',
                 verify=False):
         """Connect to a Socket.IO server.
         :param verify: Verify SSL
