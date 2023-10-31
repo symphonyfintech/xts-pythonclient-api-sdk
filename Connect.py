@@ -116,28 +116,28 @@ class XTSConnect(XTSCommon):
 
 
         # Market API endpoints
-        "marketdata.prefix": "marketdata",
-        "market.login": "/marketdata/auth/login",
-        "market.logout": "/marketdata/auth/logout",
+        "marketdata.prefix": "apimarketdata",
+        "market.login": "/apimarketdata/auth/login",
+        "market.logout": "/apimarketdata/auth/logout",
 
-        "market.config": "/marketdata/config/clientConfig",
+        "market.config": "/apimarketdata/config/clientConfig",
 
-        "market.instruments.master": "/marketdata/instruments/master",
-        "market.instruments.subscription": "/marketdata/instruments/subscription",
-        "market.instruments.unsubscription": "/marketdata/instruments/subscription",
-        "market.instruments.ohlc": "/marketdata/instruments/ohlc",
-        "market.instruments.indexlist": "/marketdata/instruments/indexlist",
-        "market.instruments.quotes": "/marketdata/instruments/quotes",
+        "market.instruments.master": "/apimarketdata/instruments/master",
+        "market.instruments.subscription": "/apimarketdata/instruments/subscription",
+        "market.instruments.unsubscription": "/apimarketdata/instruments/subscription",
+        "market.instruments.ohlc": "/apimarketdata/instruments/ohlc",
+        "market.instruments.indexlist": "/apimarketdata/instruments/indexlist",
+        "market.instruments.quotes": "/apimarketdata/instruments/quotes",
 
-        "market.search.instrumentsbyid": '/marketdata/search/instrumentsbyid',
-        "market.search.instrumentsbystring": '/marketdata/search/instruments',
+        "market.search.instrumentsbyid": '/apimarketdata/search/instrumentsbyid',
+        "market.search.instrumentsbystring": '/apimarketdata/search/instruments',
 
-        "market.instruments.instrument.series": "/marketdata/instruments/instrument/series",
-        "market.instruments.instrument.equitysymbol": "/marketdata/instruments/instrument/symbol",
-        "market.instruments.instrument.futuresymbol": "/marketdata/instruments/instrument/futureSymbol",
-        "market.instruments.instrument.optionsymbol": "/marketdata/instruments/instrument/optionsymbol",
-        "market.instruments.instrument.optiontype": "/marketdata/instruments/instrument/optionType",
-        "market.instruments.instrument.expirydate": "/marketdata/instruments/instrument/expiryDate"
+        "market.instruments.instrument.series": "/apimarketdata/instruments/instrument/series",
+        "market.instruments.instrument.equitysymbol": "/apimarketdata/instruments/instrument/symbol",
+        "market.instruments.instrument.futuresymbol": "/apimarketdata/instruments/instrument/futureSymbol",
+        "market.instruments.instrument.optionsymbol": "/apimarketdata/instruments/instrument/optionsymbol",
+        "market.instruments.instrument.optiontype": "/apimarketdata/instruments/instrument/optionType",
+        "market.instruments.instrument.expirydate": "/apimarketdata/instruments/instrument/expiryDate"
     }
 
     def __init__(self,
