@@ -189,7 +189,7 @@ if response['type'] != 'error':
 
 """Exit Cover Order Request"""
 response = xt.exit_cover_order(appOrderID=OrderID, clientID=clientID)
- print("Exit Cover Order:", response)
+print("Exit Cover Order:", response)
 
 """Cancel all Orders Request"""
 response = xt.cancelall_order(exchangeInstrumentID=22,exchangeSegment=xt.EXCHANGE_NSECM)

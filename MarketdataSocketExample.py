@@ -4,8 +4,8 @@ from Connect import XTSConnect
 from MarketDataSocketClient import MDSocket_io
 
 # MarketData API Credentials
-API_KEY = "a27e231381266f63c62157"
-API_SECRET = "Akko754#C3"
+API_KEY = "7e724b496719c0fcff3453"
+API_SECRET = "Pnog114@9w"
 source = "WEBAPI"
 
 # Initialise
@@ -24,9 +24,7 @@ soc = MDSocket_io(set_marketDataToken, set_muserID)
 
 # Instruments for subscribing
 Instruments = [
-                {'exchangeSegment': 1, 'exchangeInstrumentID': 2885},
-                {'exchangeSegment': 1, 'exchangeInstrumentID': 26000},
-                {'exchangeSegment': 2, 'exchangeInstrumentID': 51601}
+                {'exchangeSegment': 1, 'exchangeInstrumentID': 26000}
                ]
 
 # Callback for connection
@@ -36,7 +34,7 @@ def on_connect():
 
     # # Subscribe to instruments
     print('Sending subscription request for Instruments - \n' + str(Instruments))
-    response = xt.send_subscription(Instruments, 1501)
+    response = xt.send_subscription(Instruments, 1505)
     print('Sent Subscription request!')
     print("Subscription response: ", response)
 
@@ -46,6 +44,7 @@ def on_message(data):
 
 # Callback for message code 1501 FULL
 def on_message1501_json_full(data):
+    return
     print('I received a 1501 Touchline message!' + data)
 
 # Callback for message code 1502 FULL
@@ -58,45 +57,55 @@ def on_message1505_json_full(data):
 
 # Callback for message code 1507 FULL
 def on_message1507_json_full(data):
+    return
     print('I received a 1507 MarketStatus data message!' + data)
 
 # Callback for message code 1510 FULL
 def on_message1510_json_full(data):
+    return
     print('I received a 1510 Open interest message!' + data)
 
 # Callback for message code 1512 FULL
 def on_message1512_json_full(data):
+    return
     print('I received a 1512 Level1,LTP message!' + data)
 
 # Callback for message code 1105 FULL
 def on_message1105_json_full(data):
+    return
     print('I received a 1105, Instrument Property Change Event message!' + data)
 
 
 # Callback for message code 1501 PARTIAL
 def on_message1501_json_partial(data):
+    return
     print('I received a 1501, Touchline Event message!' + data)
 
 # Callback for message code 1502 PARTIAL
 def on_message1502_json_partial(data):
+    return
     print('I received a 1502 Market depth message!' + data)
 
 # Callback for message code 1505 PARTIAL
 def on_message1505_json_partial(data):
+    return
     print('I received a 1505 Candle data message!' + data)
 
 # Callback for message code 1510 PARTIAL
 def on_message1510_json_partial(data):
+    return
     print('I received a 1510 Open interest message!' + data)
 
 # Callback for message code 1512 PARTIAL
 def on_message1512_json_partial(data):
+    return
     print('I received a 1512, LTP Event message!' + data)
 
 
 
 # Callback for message code 1105 PARTIAL
 def on_message1105_json_partial(data):
+    return
     print('I received a 1105, Instrument Property Change Event message!' + data)
 
 # Callback for disconnection
