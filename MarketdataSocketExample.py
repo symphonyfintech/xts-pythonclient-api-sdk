@@ -71,6 +71,10 @@ def on_message1512_json_full(data):
 # Callback for message code 1105 FULL
 def on_message1105_json_full(data):
     print('I received a 1105, Instrument Property Change Event message!' + data)
+  # Callback for message code 1105 FULL
+def on_message1105_json_partial(data):
+    print('I received a 1105, Instrument Property Change Event message!' + data)
+
 
 
 # Callback for message code 1501 PARTIAL
@@ -138,6 +142,8 @@ el.on('1502-json-full', on_message1502_json_full)
 el.on('1507-json-full', on_message1507_json_full)
 el.on('1512-json-full', on_message1512_json_full)
 el.on('1105-json-full', on_message1105_json_full)
+el.on('1105-json-partial', on_message1105_json_full)
+
 
 # Infinite loop on the main thread. Nothing after this will run.
 # You have to use the pre-defined callbacks to manage subscriptions.
