@@ -132,10 +132,6 @@ To Cancel an order you need to user Interactive api and In response you will get
 		message = "1502 >> #{id} >> {data}".format(id=2885, data=data)
 		sock.send(message)
 
-	# Callback for message code 1504 FULL
-	def on_message1504_json_full(data):
-		print('I received a 1504 Index data message!' + data)
-
 	# Callback for message code 1505 FULL
 	def on_message1505_json_full(data):
 		print('I received a 1505 Candle data message!' + data)
@@ -153,10 +149,6 @@ To Cancel an order you need to user Interactive api and In response you will get
 	# Callback for message code 1502 PARTIAL
 	def on_message1502_json_partial(data):
 		print('I received a 1502 partial message!' + data)
-
-	# Callback for message code 1504 PARTIAL
-	def on_message1504_json_partial(data):
-		print('I received a 1504 Index data message!' + data)
 
 	# Callback for message code 1505 PARTIAL
 	def on_message1505_json_partial(data):

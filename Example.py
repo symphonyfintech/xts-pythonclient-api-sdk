@@ -1,7 +1,6 @@
 # from XTConnect import XTSConnect
 from Connect import XTSConnect
 
-# logging.basicConfig(level=logging.DEBUG)
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Interactive
@@ -18,10 +17,10 @@ from Connect import XTSConnect
 "Note : For dealer credentials add the clientID and for investor client leave the clientID blank"
 
 """Dealer credentials"""
-API_KEY = "614569687dde8e1d6b5953"
-API_SECRET = "Glds375@uv"
-clientID = "DV01"
-userID = "DVIHAN"
+API_KEY = "096328d98d30f4c551c503"
+API_SECRET = "Letp625#gV"
+clientID = "ATHARVA1"
+userID = ""
 XTS_API_BASE_URL = "https://developers.symphonyfintech.in"
 source = "WEBAPI"
 
@@ -38,10 +37,7 @@ xt = XTSConnect(API_KEY, API_SECRET, source)
 """Using the xt object we created call the interactive login Request"""
 response = xt.interactive_login()
 print("Login: ", response)
-clientID = "DV01"
-"""Order book Request"""
-response = xt.get_order_book(clientID)
-print("Order Book: ", response)
+
 
 """Place Order Request"""
 response = xt.place_order(
@@ -55,14 +51,25 @@ response = xt.place_order(
     orderQuantity=10,
     limitPrice=0,
     stopPrice=0,
+    apiOrderSource="",
     orderUniqueIdentifier="454845",
     clientID=clientID)
+
 print("Place Order: ", response)
 
+
+clientID = "ATHARVA1"
+"""Order book Request"""
+response = xt.get_order_book(clientID)
+print("Order Book: ", response)
 
 # extracting the order id from response
 if response['type'] != 'error':
     OrderID = response['result']['AppOrderID']
+
+    """Get Order History Request"""
+    response = xt.get_order_history(appOrderID=OrderID,clientID=clientID)
+    print("Order History: ", response)
 
     """Modify Order Request"""
     response = xt.modify_order(
@@ -104,19 +111,30 @@ response = xt.place_bracketorder(
     stopLossPrice=1,
 	trailingStoploss=1,
     isProOrder=False,
+    apiOrderSource="",
     orderUniqueIdentifier="454845"
     )
 print("Bracket Order: ", response)
+
 # extracting the order id from response
 if response['type'] != 'error':
     OrderID = response['result']['AppOrderID']
     
-"""Cancel BracketOrder Request"""
-res = self.xt_.bracketorder_cancel(appOrderId)
-print("Bracket Cancel: ", response)
+    """Cancel BracketOrder Request"""
+    res = xt.bracketorder_cancel(OrderID)
+    print("Bracket Cancel: ", response)
+
+    """Modify BracketOrder Request"""
+    response = xt.modify_order(
+        appOrderID=OrderID,
+        orderQuantity=8,
+        limitPrice=1405,
+        stopPrice=0,
+        clientID=clientID
+    )
+    print("Modify BracketOrder: ", response)
 
     
-
 """Get Profile Request"""
 response = xt.get_profile(clientID=userID)
 print("Profile: ", response)
@@ -179,6 +197,7 @@ response = xt.place_cover_order(
     disclosedQuantity=0,
     limitPrice=1802,
     stopPrice=1899,
+    apiOrderSource="",
     orderUniqueIdentifier="454845",
     clientID=clientID)
 print("Cover Order:", response)
@@ -187,9 +206,9 @@ print("Cover Order:", response)
 if response['type'] != 'error':
     OrderID = response['result']['ExitAppOrderID']
 
-"""Exit Cover Order Request"""
-response = xt.exit_cover_order(appOrderID=OrderID, clientID=clientID)
- print("Exit Cover Order:", response)
+    """Exit Cover Order Request"""
+    response = xt.exit_cover_order(appOrderID=OrderID, clientID=clientID)
+    print("Exit Cover Order:", response)
 
 """Cancel all Orders Request"""
 response = xt.cancelall_order(exchangeInstrumentID=22,exchangeSegment=xt.EXCHANGE_NSECM)
@@ -242,7 +261,7 @@ instruments = [
 """Get Quote Request"""
 response = xt.get_quote(
     Instruments=instruments,
-    xtsMessageCode=1504,
+    xtsMessageCode=1502,
     publishFormat='JSON')
 print('Quote :', response)
 
@@ -267,9 +286,9 @@ print("Master: " + str(response))
 response = xt.get_ohlc(
     exchangeSegment=xt.EXCHANGE_NSECM,
     exchangeInstrumentID=22,
-    startTime='Dec 16 2019 090000',
-    endTime='Dec 18 2019 150000',
-    compressionValue=1)
+    startTime='Jan 04 2025 090000',
+    endTime='Jan 04 2019 150000',
+    compressionValue='60')
 print("OHLC: " + str(response))
 
 """Get Series Request"""

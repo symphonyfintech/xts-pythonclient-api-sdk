@@ -9,12 +9,9 @@
 import configparser
 import json
 import logging
-
 import requests
-from six.moves.urllib.parse import urljoin
-
+from urllib import parse
 import Exception as ex
-
 log = logging.getLogger(__name__)
 
 
@@ -80,6 +77,7 @@ class XTSConnect(XTSCommon):
     EXCHANGE_NSECD = "NSECD"
     EXCHANGE_MCXFO = "MCXFO"
     EXCHANGE_BSECM = "BSECM"
+    EXCHANGE_BSEFO = "BSEFO"
 
     # URIs to various calls
     _routes = {
@@ -95,7 +93,7 @@ class XTSConnect(XTSCommon):
         "order.status": "/interactive/orders",
         "order.place": "/interactive/orders",
         "bracketorder.place": "/interactive/orders/bracket",
-	"bracketorder.modify": "/interactive/orders/bracket",
+	    "bracketorder.modify": "/interactive/orders/bracket",
         "bracketorder.cancel": "/interactive/orders/bracket",
         "order.place.cover": "/interactive/orders/cover",
         "order.exit.cover": "/interactive/orders/cover",
@@ -108,9 +106,9 @@ class XTSConnect(XTSCommon):
         "portfolio.holdings": "/interactive/portfolio/holdings",
         "portfolio.positions.convert": "/interactive/portfolio/positions/convert",
         "portfolio.squareoff": "/interactive/portfolio/squareoff",
-	"portfolio.dealerpositions": "interactive/portfolio/dealerpositions",
-	"order.dealer.status": "/interactive/orders/dealerorderbook",
-	"dealer.trades": "/interactive/orders/dealertradebook",
+        "portfolio.dealerpositions": "interactive/portfolio/dealerpositions",
+        "order.dealer.status": "/interactive/orders/dealerorderbook",
+        "dealer.trades": "/interactive/orders/dealertradebook",
 
 
 
@@ -236,6 +234,7 @@ class XTSConnect(XTSCommon):
         except Exception as e:
             return response['description']
 
+
     def place_order(self,
                     exchangeSegment,
                     exchangeInstrumentID,
@@ -248,6 +247,7 @@ class XTSConnect(XTSCommon):
                     limitPrice,
                     stopPrice,
                     orderUniqueIdentifier,
+                    apiOrderSource,
                     clientID=None
                     ):
         """To place an order"""
@@ -264,6 +264,7 @@ class XTSConnect(XTSCommon):
                 "orderQuantity": orderQuantity,
                 "limitPrice": limitPrice,
                 "stopPrice": stopPrice,
+                "apiOrderSource":apiOrderSource,
                 "orderUniqueIdentifier": orderUniqueIdentifier
             }
 
@@ -274,72 +275,6 @@ class XTSConnect(XTSCommon):
             return response
         except Exception as e:
             return response['description']
-        
-    def place_bracketorder(self,
-                    exchangeSegment,
-                    exchangeInstrumentID,
-                    orderType,
-                    orderSide,
-                    disclosedQuantity,
-                    orderQuantity,
-                    limitPrice,
-                    squarOff,
-                    stopLossPrice,
-	                trailingStoploss,
-                    isProOrder,
-                    orderUniqueIdentifier,
-                     ):
-        """To place a bracketorder"""
-        try:
-
-            params = {
-                "exchangeSegment": exchangeSegment,
-                "exchangeInstrumentID": exchangeInstrumentID,
-                "orderType": orderType,
-                "orderSide": orderSide,
-                "disclosedQuantity": disclosedQuantity,
-                "orderQuantity": orderQuantity,
-                "limitPrice": limitPrice,
-                "squarOff": squarOff,
-                "stopLossPrice": stopLossPrice,
-                "trailingStoploss": trailingStoploss,
-                "isProOrder": isProOrder,
-             "orderUniqueIdentifier": orderUniqueIdentifier
-            }
-            response = self._post('bracketorder.place', json.dumps(params))
-            print(response)
-            return response
-        except Exception as e:
-            return response['description']
-
-    def get_profile(self, clientID=None):
-        """Using session token user can access his profile stored with the broker, it's possible to retrieve it any
-        point of time with the http: //ip:port/interactive/user/profile API. """
-        try:
-            params = {}
-            if not self.isInvestorClient:
-                params['clientID'] = clientID
-
-            response = self._get('user.profile', params)
-            return response
-        except Exception as e:
-            return response['description']
-
-    def get_balance(self, clientID=None):
-        """Get Balance API call grouped under this category information related to limits on equities, derivative,
-        upfront margin, available exposure and other RMS related balances available to the user."""
-        if self.isInvestorClient:
-            try:
-                params = {}
-                if not self.isInvestorClient:
-                    params['clientID'] = clientID
-                response = self._get('user.balance', params)
-                return response
-            except Exception as e:
-                return response['description']
-        else:
-            print("Balance : Balance API available for retail API users only, dealers can watch the same on dealer "
-                  "terminal")
 
     def modify_order(self,
                      appOrderID,
@@ -378,6 +313,164 @@ class XTSConnect(XTSCommon):
         except Exception as e:
             return response['description']
 
+
+        
+    def place_bracketorder(self,
+                    exchangeSegment,
+                    exchangeInstrumentID,
+                    orderType,
+                    orderSide,
+                    disclosedQuantity,
+                    orderQuantity,
+                    limitPrice,
+                    squarOff,
+                    stopLossPrice,
+	                trailingStoploss,
+                    isProOrder,
+                    apiOrderSource,
+                    orderUniqueIdentifier,
+                     ):
+        """To place a bracketorder"""
+        try:
+
+            params = {
+                "exchangeSegment": exchangeSegment,
+                "exchangeInstrumentID": exchangeInstrumentID,
+                "orderType": orderType,
+                "orderSide": orderSide,
+                "disclosedQuantity": disclosedQuantity,
+                "orderQuantity": orderQuantity,
+                "limitPrice": limitPrice,
+                "squarOff": squarOff,
+                "stopLossPrice": stopLossPrice,
+                "trailingStoploss": trailingStoploss,
+                "isProOrder": isProOrder,
+                "apiOrderSource":apiOrderSource,
+                "orderUniqueIdentifier": orderUniqueIdentifier
+            }
+            response = self._post('bracketorder.place', json.dumps(params))
+            print(response)
+            return response
+        except Exception as e:
+            return response['description']
+
+    def bracketorder_cancel(self, appOrderID, clientID=None):
+        """This API can be called to cancel any open order of the user by providing correct appOrderID matching with
+        the chosen open order to cancel. """
+        try:
+            params = {'boEntryOrderId': int(appOrderID)}
+            if not self.isInvestorClient:
+                params['clientID'] = clientID
+            response = self._delete('bracketorder.cancel', params)
+            return response
+        except Exception as e:
+            return response['description']   
+
+    def modify_bracketorder(self,
+                     appOrderID,
+                     orderQuantity,
+                     limitPrice,
+                     stopPrice,
+                     clientID=None
+                     ):
+        try:
+            appOrderID = int(appOrderID)
+            params = {
+                'appOrderID': appOrderID,
+                'bracketorder.modify': orderQuantity,
+                'limitPrice': limitPrice,
+                'stopPrice': stopPrice
+            }
+
+            if not self.isInvestorClient:
+                params['clientID'] = clientID
+
+            response = self._put('bracketorder.modify', json.dumps(params))
+            return response
+        except Exception as e:
+            return response['description']
+
+
+    def place_cover_order(self, 
+                          exchangeSegment, 
+                          exchangeInstrumentID, 
+                          orderSide,orderType, 
+                          orderQuantity, 
+                          disclosedQuantity,
+                          limitPrice, 
+                          stopPrice, 
+                          apiOrderSource,
+                          orderUniqueIdentifier, 
+                          clientID=None):
+        """A Cover Order is an advance intraday order that is accompanied by a compulsory Stop Loss Order. This helps
+        users to minimize their losses by safeguarding themselves from unexpected market movements. A Cover Order
+        offers high leverage and is available in Equity Cash, Equity F&O, Commodity F&O and Currency F&O segments. It
+        has 2 orders embedded in itself, they are Limit/Market Order Stop Loss Order """
+        try:
+
+            params = {'exchangeSegment': exchangeSegment, 
+                      'exchangeInstrumentID': exchangeInstrumentID,
+                      'orderSide': orderSide, 
+                      "orderType": orderType,
+                      'orderQuantity': orderQuantity, 
+                      'disclosedQuantity': disclosedQuantity,
+                      'limitPrice': limitPrice, 
+                      'stopPrice': stopPrice, 
+                      'apiOrderSource': apiOrderSource,
+                      'orderUniqueIdentifier': orderUniqueIdentifier
+                      }
+            if not self.isInvestorClient:
+                params['clientID'] = clientID
+            response = self._post('order.place.cover', json.dumps(params))
+            return response
+        except Exception as e:
+            return response['description']
+
+    def exit_cover_order(self, appOrderID, clientID=None):
+        """Exit Cover API is a functionality to enable user to easily exit an open stoploss order by converting it
+        into Exit order. """
+        try:
+
+            params = {'appOrderID': appOrderID}
+            if not self.isInvestorClient:
+                params['clientID'] = clientID
+            response = self._put('order.exit.cover', json.dumps(params))
+            return response
+        except Exception as e:
+            return response['description']
+
+
+
+    def get_profile(self, clientID=None):
+        """Using session token user can access his profile stored with the broker, it's possible to retrieve it any
+        point of time with the http: //ip:port/interactive/user/profile API. """
+        try:
+            params = {}
+            if not self.isInvestorClient:
+                params['clientID'] = clientID
+
+            response = self._get('user.profile', params)
+            return response
+        except Exception as e:
+            return response['description']
+
+    def get_balance(self, clientID=None):
+        """Get Balance API call grouped under this category information related to limits on equities, derivative,
+        upfront margin, available exposure and other RMS related balances available to the user."""
+        if self.isInvestorClient:
+            try:
+                params = {}
+                if not self.isInvestorClient:
+                    params['clientID'] = clientID
+                response = self._get('user.balance', params)
+                return response
+            except Exception as e:
+                return response['description']
+        else:
+            print("Balance : Balance API available for retail API users only, dealers can watch the same on dealer "
+                  "terminal")
+
+
     def get_trade(self, clientID=None):
         """Trade book returns a list of all trades executed on a particular day , that were placed by the user . The
         trade book will display all filled and partially filled orders. """
@@ -414,18 +507,7 @@ class XTSConnect(XTSCommon):
         except Exception as e:
             return response['description']
 
-    def bracketorder_cancel(self, appOrderID, clientID=None):
-        """This API can be called to cancel any open order of the user by providing correct appOrderID matching with
-        the chosen open order to cancel. """
-        try:
-            params = {'boEntryOrderId': int(appOrderID)}
-            if not self.isInvestorClient:
-                params['clientID'] = clientID
-            response = self._delete('bracketorder.cancel', params)
-            return response
-        except Exception as e:
-            return response['description']   
-		
+
     def get_dealerposition_netwise(self, clientID=None):
         """The positions API positions by net. Net is the actual, current net position portfolio."""
         try:
@@ -520,36 +602,6 @@ class XTSConnect(XTSCommon):
         except Exception as e:
             return response['description']    
 
-    def place_cover_order(self, exchangeSegment, exchangeInstrumentID, orderSide,orderType, orderQuantity, disclosedQuantity,
-                          limitPrice, stopPrice, orderUniqueIdentifier, clientID=None):
-        """A Cover Order is an advance intraday order that is accompanied by a compulsory Stop Loss Order. This helps
-        users to minimize their losses by safeguarding themselves from unexpected market movements. A Cover Order
-        offers high leverage and is available in Equity Cash, Equity F&O, Commodity F&O and Currency F&O segments. It
-        has 2 orders embedded in itself, they are Limit/Market Order Stop Loss Order """
-        try:
-
-            params = {'exchangeSegment': exchangeSegment, 'exchangeInstrumentID': exchangeInstrumentID,
-                      'orderSide': orderSide, "orderType": orderType,'orderQuantity': orderQuantity, 'disclosedQuantity': disclosedQuantity,
-                      'limitPrice': limitPrice, 'stopPrice': stopPrice, 'orderUniqueIdentifier': orderUniqueIdentifier}
-            if not self.isInvestorClient:
-                params['clientID'] = clientID
-            response = self._post('order.place.cover', json.dumps(params))
-            return response
-        except Exception as e:
-            return response['description']
-
-    def exit_cover_order(self, appOrderID, clientID=None):
-        """Exit Cover API is a functionality to enable user to easily exit an open stoploss order by converting it
-        into Exit order. """
-        try:
-
-            params = {'appOrderID': appOrderID}
-            if not self.isInvestorClient:
-                params['clientID'] = clientID
-            response = self._put('order.exit.cover', json.dumps(params))
-            return response
-        except Exception as e:
-            return response['description']
 
     def squareoff_position(self, exchangeSegment, exchangeInstrumentID, productType, squareoffMode,
                            positionSquareOffQuantityType, squareOffQtyValue, blockOrderSending, cancelOrders,
@@ -596,9 +648,9 @@ class XTSConnect(XTSCommon):
         except Exception as e:
             return response['description']
 
-    ########################################################################################################
-    # Market data API
-    ########################################################################################################
+########################################################################################################
+# Market data API
+########################################################################################################
 
     def marketdata_login(self):
         try:
@@ -777,7 +829,7 @@ class XTSConnect(XTSCommon):
 
         # Form a restful URL
         uri = self._routes[route].format(params)
-        url = urljoin(self.root, uri)
+        url = parse.urljoin(self.root, uri)
         headers = {}
 
         if self.token:
